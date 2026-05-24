@@ -1,7 +1,7 @@
 [project]
 name = "django-json-form"
 version = "0.1.0"
-description = "Add your description here"
+description = "battery for modification of class `forms.Form`, which displays dict and json"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

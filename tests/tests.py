@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django import forms
-
 from django_json_form.form import JsonForm
 
 
