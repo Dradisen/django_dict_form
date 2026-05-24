@@ -3,7 +3,7 @@ import json
 from django import forms
 
 
-class JsonFormMixin:
+class RenderableJsonFormMixin:
 
     def as_dict(self) -> dict[str, dict]:
         attrs = dict()
@@ -31,6 +31,6 @@ class JsonFormMixin:
 
     def as_json(self):
         return json.dumps(self.as_dict())
-    
 
-class JsonForm(forms.Form, JsonFormMixin): ...
+
+class JsonForm(forms.Form, RenderableJsonFormMixin): ...

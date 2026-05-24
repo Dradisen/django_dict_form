@@ -9,10 +9,10 @@ TODO: Write tests for this fields
 Field [+-]
 CharField [+-]
 IntegerField [+-]
-DateField [-]
-TimeField [-]
-DateTimeField [-]
-DurationField [-]
+DateField [+-]
+TimeField [+-]
+DateTimeField [+-]
+DurationField [+-]
 RegexField [-]
 EmailField [-]
 FileField [-]
@@ -40,48 +40,51 @@ UUIDField [-]
 MAX_DIFF = None
 
 
+def make_data():
+    return {
+        'field': {
+            'label': None, 
+            'label_suffix': None,
+            'widget': {
+                'name': 'TextInput', 
+                'is_hidden': False, 
+                'required': True, 
+                'type': 'text',
+                'choices': [],
+                'attrs': {}
+            }, 
+            'disabled': False, 
+            'help_text': '', 
+            'initial': None,
+        }
+    }
 
-class BaseFieldTestCase(TestCase):
+
+class BaseTestCase(TestCase):
     
     def setUp(self) -> None:
         self.maxDiff = MAX_DIFF
         return super().setUp()
+
+
+class BaseFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
-        
         class TestForm(JsonForm):
-            some_field = forms.Field()
-    
+            field = forms.Field()
+
         form = TestForm()
         result = form.as_dict()
-        expect = {
-            'some_field': {
-                'label': None, 
-                'label_suffix': None,
-                'widget': {
-                    'name': 'TextInput', 
-                    'is_hidden': False, 
-                    'required': True, 
-                    'type': 'text',
-                    'choices': [],
-                    'attrs': {}
-                }, 
-                'disabled': False, 
-                'help_text': '', 
-                'initial': None,
-            }
-        }  
+        expect = make_data()
         self.assertDictEqual(expect, result)
    
-    def test_with_all_args(self):
-        
+    def test_with_all_args(self): 
         class TestForm(JsonForm):
-            some_field = forms.Field(
+            field = forms.Field(
                 required=False, 
                 label='Some value', 
                 label_suffix='-', 
                 initial=1,
-                # widget=forms.widgets.ChoiceWidget,
                 help_text='help text',
                 error_messages=[],
                 show_hidden_initial=True,
@@ -89,7 +92,7 @@ class BaseFieldTestCase(TestCase):
             )
 
         expect = {
-            'some_field': {
+            'field': {
                 'label': 'Some value', 
                 'label_suffix': '-',
                 'widget': {
@@ -111,33 +114,12 @@ class BaseFieldTestCase(TestCase):
         self.assertDictEqual(expect, result)
 
 
-class CharFieldTestCase(TestCase):
+class CharFieldTestCase(BaseTestCase):
       
-    def setUp(self) -> None:
-        self.maxDiff = MAX_DIFF
-        return super().setUp()
-    
     def test_without_args(self):
         class TestForm(JsonForm):
             some_field = forms.CharField()
-
-        expect = {
-            'some_field': {
-                'label': None, 
-                'label_suffix': None,
-                'widget': {
-                    'name': 'TextInput', 
-                    'is_hidden': False, 
-                    'required': True, 
-                    'type': 'text',
-                    'choices': [],
-                    'attrs': {}
-                }, 
-                'disabled': False, 
-                'help_text': '', 
-                'initial': None,
-            }
-        }
+        expect = make_data()
         
         form = TestForm()
         result = form.as_dict()
@@ -181,33 +163,13 @@ class CharFieldTestCase(TestCase):
         self.assertDictEqual(expect, result)
     
 
-class IntegerFieldTestCase(TestCase):
-    
-    def setUp(self) -> None:
-        self.maxDiff = MAX_DIFF
-        return super().setUp()
+class IntegerFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
         class IntegerJsonForm(JsonForm):
             some_field = forms.IntegerField()
 
-        expect = {
-            'some_field': {
-                'label': None, 
-                'label_suffix': None,
-                'widget': {
-                    'name': 'NumberInput', 
-                    'is_hidden': False, 
-                    'required': True, 
-                    'type': 'number',
-                    'choices': [],
-                    'attrs': {}
-                }, 
-                'disabled': False, 
-                'help_text': '', 
-                'initial': None,
-            }
-        }
+        expect = make_data()
         
         form = IntegerJsonForm()
         result = form.as_dict()
@@ -295,3 +257,202 @@ class IntegerFieldTestCase(TestCase):
         result = form.as_dict()
         self.assertDictEqual(expect, result)
 
+
+class DateFieldTestCase(BaseTestCase):
+    
+    def test_without_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DateField()
+    
+        form = TestForm()
+        result = form.as_dict()
+        expect = make_data()
+        self.assertDictEqual(expect, result)
+   
+    def test_with_all_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DateField(
+                required=False, 
+                label='Some value', 
+                label_suffix='-', 
+                initial=1,
+                # widget=forms.widgets.ChoiceWidget,
+                help_text='help text',
+                error_messages=[],
+                show_hidden_initial=True,
+                disabled=True,
+            )
+
+        expect = {
+            'some_field': {
+                'label': 'Some value', 
+                'label_suffix': '-',
+                'widget': {
+                    'name': 'DateInput', 
+                    'is_hidden': False, 
+                    'required': False, 
+                    'type': 'text',
+                    'choices': [],
+                    'attrs': {}
+                }, 
+                'disabled': True, 
+                'help_text': 'help text',
+                'initial': 1,
+            }
+        }
+        
+        form = TestForm()
+        result = form.as_dict()
+        self.assertDictEqual(expect, result)
+
+
+class TimeFieldTestCase(BaseTestCase):
+    
+    def test_without_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.TimeField()
+    
+        form = TestForm()
+        result = form.as_dict()
+        expect = make_data()
+        self.assertDictEqual(expect, result)
+   
+    def test_with_all_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.TimeField(
+                required=False, 
+                label='Some value', 
+                label_suffix='-', 
+                initial=1,
+                # widget=forms.widgets.ChoiceWidget,
+                help_text='help text',
+                error_messages=[],
+                show_hidden_initial=True,
+                disabled=True,
+            )
+
+        expect = {
+            'some_field': {
+                'label': 'Some value', 
+                'label_suffix': '-',
+                'widget': {
+                    'name': 'TimeInput', 
+                    'is_hidden': False, 
+                    'required': False, 
+                    'type': 'text',
+                    'choices': [],
+                    'attrs': {}
+                }, 
+                'disabled': True, 
+                'help_text': 'help text',
+                'initial': 1,
+            }
+        }
+        
+        form = TestForm()
+        result = form.as_dict()
+        self.assertDictEqual(expect, result)
+
+
+class DateTimeFieldTestCase(BaseTestCase):
+    
+    def test_without_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DateTimeField()
+    
+        form = TestForm()
+        result = form.as_dict()
+        expect = make_data()
+        self.assertDictEqual(expect, result)
+   
+    def test_with_all_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DateTimeField(
+                required=False, 
+                label='Some value', 
+                label_suffix='-', 
+                initial=1,
+                # widget=forms.widgets.ChoiceWidget,
+                help_text='help text',
+                error_messages=[],
+                show_hidden_initial=True,
+                disabled=True,
+            )
+
+        expect = {
+            'some_field': {
+                'label': 'Some value', 
+                'label_suffix': '-',
+                'widget': {
+                    'name': 'DateTimeInput', 
+                    'is_hidden': False, 
+                    'required': False, 
+                    'type': 'text',
+                    'choices': [],
+                    'attrs': {}
+                }, 
+                'disabled': True, 
+                'help_text': 'help text',
+                'initial': 1,
+            }
+        }
+        
+        form = TestForm()
+        result = form.as_dict()
+        self.assertDictEqual(expect, result)
+
+
+class DurationFieldTestCase(BaseTestCase):
+    
+    def test_without_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DurationField()
+    
+        form = TestForm()
+        result = form.as_dict()
+        expect = make_data() 
+        self.assertDictEqual(expect, result)
+   
+    def test_with_all_args(self):
+        
+        class TestForm(JsonForm):
+            some_field = forms.DurationField(
+                required=False, 
+                label='Some value', 
+                label_suffix='-', 
+                initial=1,
+                # widget=forms.widgets.ChoiceWidget,
+                help_text='help text',
+                error_messages=[],
+                show_hidden_initial=True,
+                disabled=True,
+            )
+
+        expect = {
+            'some_field': {
+                'label': 'Some value', 
+                'label_suffix': '-',
+                'widget': {
+                    'name': 'TextInput', 
+                    'is_hidden': False, 
+                    'required': False, 
+                    'type': 'text',
+                    'choices': [],
+                    'attrs': {}
+                }, 
+                'disabled': True, 
+                'help_text': 'help text',
+                'initial': 1,
+            }
+        }
+        
+        form = TestForm()
+        result = form.as_dict()
+        self.assertDictEqual(expect, result)
