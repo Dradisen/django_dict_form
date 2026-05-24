@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django import forms
-from django_json_form.form import JsonForm
+from django_json_form.form import DictForm
 
 
 """
@@ -70,7 +70,7 @@ class BaseTestCase(TestCase):
 class BaseFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             field = forms.Field()
 
         form = TestForm()
@@ -79,7 +79,7 @@ class BaseFieldTestCase(BaseTestCase):
         self.assertDictEqual(expect, result)
    
     def test_with_all_args(self): 
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             field = forms.Field(
                 required=False, 
                 label='Some value', 
@@ -117,7 +117,7 @@ class BaseFieldTestCase(BaseTestCase):
 class CharFieldTestCase(BaseTestCase):
       
     def test_without_args(self):
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.CharField()
         expect = make_data()
         
@@ -126,7 +126,7 @@ class CharFieldTestCase(BaseTestCase):
         self.assertDictEqual(expect, result)
    
     def test_with_all_args(self):
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.CharField(
                 min_length=1,
                 max_length=100,
@@ -166,17 +166,17 @@ class CharFieldTestCase(BaseTestCase):
 class IntegerFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
-        class IntegerJsonForm(JsonForm):
+        class IntegerDictForm(DictForm):
             some_field = forms.IntegerField()
 
         expect = make_data()
         
-        form = IntegerJsonForm()
+        form = IntegerDictForm()
         result = form.as_dict()
         self.assertDictEqual(expect, result)
    
     def test_with_all_args(self):
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.IntegerField(
                 max_value=100,
                 min_value=1,
@@ -217,7 +217,7 @@ class IntegerFieldTestCase(BaseTestCase):
         self.assertDictEqual(expect, result)
     
     def test_another_widget(self):
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.IntegerField(
                 max_value=100,
                 min_value=1,
@@ -262,7 +262,7 @@ class DateFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DateField()
     
         form = TestForm()
@@ -272,7 +272,7 @@ class DateFieldTestCase(BaseTestCase):
    
     def test_with_all_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DateField(
                 required=False, 
                 label='Some value', 
@@ -312,7 +312,7 @@ class TimeFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.TimeField()
     
         form = TestForm()
@@ -322,7 +322,7 @@ class TimeFieldTestCase(BaseTestCase):
    
     def test_with_all_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.TimeField(
                 required=False, 
                 label='Some value', 
@@ -362,7 +362,7 @@ class DateTimeFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DateTimeField()
     
         form = TestForm()
@@ -372,7 +372,7 @@ class DateTimeFieldTestCase(BaseTestCase):
    
     def test_with_all_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DateTimeField(
                 required=False, 
                 label='Some value', 
@@ -412,7 +412,7 @@ class DurationFieldTestCase(BaseTestCase):
     
     def test_without_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DurationField()
     
         form = TestForm()
@@ -422,7 +422,7 @@ class DurationFieldTestCase(BaseTestCase):
    
     def test_with_all_args(self):
         
-        class TestForm(JsonForm):
+        class TestForm(DictForm):
             some_field = forms.DurationField(
                 required=False, 
                 label='Some value', 

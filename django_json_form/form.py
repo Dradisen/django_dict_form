@@ -3,7 +3,7 @@ import json
 from django import forms
 
 
-class RenderableJsonFormMixin:
+class RenderableDictFormMixin:
 
     def as_dict(self) -> dict[str, dict]:
         attrs = dict()
@@ -19,8 +19,6 @@ class RenderableJsonFormMixin:
                     required=field_value.widget.is_required,
                     type=getattr(field_value.widget, 'input_type', None),
                     choices=choices,
-                    # value=self.format_value(value),
-                    # attrs=self.build_attrs(self.attrs, attrs),
                     attrs=getattr(field_value.widget, 'attrs', None),
                 ),
                 disabled=field_value.disabled,
@@ -29,8 +27,5 @@ class RenderableJsonFormMixin:
             )
         return attrs
 
-    def as_json(self):
-        return json.dumps(self.as_dict())
 
-
-class JsonForm(forms.Form, RenderableJsonFormMixin): ...
+class DictForm(forms.Form, RenderableDictFormMixin): ...
