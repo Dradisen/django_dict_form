@@ -1,9 +1,11 @@
+import json
+
 from django import forms
 
 
 class JsonFormMixin:
-    
-    def as_json(self) -> dict[str, dict]:
+
+    def as_dict(self) -> dict[str, dict]:
         attrs = dict()
 
         for field_name, field_value in self.fields.items():
@@ -27,5 +29,8 @@ class JsonFormMixin:
             )
         return attrs
 
+    def as_json(self):
+        return json.dumps(self.as_dict())
+    
 
 class JsonForm(forms.Form, JsonFormMixin): ...
