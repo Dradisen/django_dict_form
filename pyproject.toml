@@ -1,9 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "django-json-form"
+name = "django-dict-form"
 version = "0.1.0"
-description = "battery for modification of class `forms.Form`, which displays dict and json"
+description = "Is a lightweight extension for Django Forms that adds serialization"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "django>=6.0.5",
 ]
+url='https://github.com/Dradisen/django_dict_form',
+license = { 
+    text = "MIT" 
+}
+authors = [
+  { name = "Gleb Uvarov", email = "ugs1996@gmail.com" }
+]
+keywords = [
+    "django",
+    "django-forms"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/Dradisen/django_dict_form"
+Repository = "https://github.com/Dradisen/django_dict_form"
+Issues = "https://github.com/Dradisen/django_dict_form/issues"
+Documentation = "https://github.com/Dradisen/django_dict_form#readme"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.setuptools]
+package-dir = {"" = "django_dict_form"}
+
+[tool.setuptools.packages.find]
+where = ["django_dict_form"]
+
+[tool.coverage.run]
+branch = true
+source = ["django_dict_form"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

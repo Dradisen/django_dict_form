@@ -7,10 +7,9 @@ The package allows developers to convert Django form definitions into structured
 
 It extends the standard Django form rendering approach (as_p, as_table, as_ul) by providing machine-readable representations of form fields, metadata, validation rules, and configuration.
 
-## Key features:
+## Features
 
 - Serialize Django forms to Python dictionaries
-- Export forms as JSON
 - Useful for dynamic frontend rendering
 - Simplifies API-driven form generation
 - Lightweight and framework-friendly
