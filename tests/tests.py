@@ -1,6 +1,5 @@
-# TODO: add tests for: FileField, ImageField, NullBooleanField, MultipleChoiceField,
-# ComboField, MultiValueField, DecimalField, SplitDateTimeField, GenericIPAddressField,
-# FilePathField, JSONField, SlugField, TypedChoiceField, TypedMultipleChoiceField
+import django
+import tempfile
 
 from django.test import TestCase
 from django import forms
@@ -237,10 +236,16 @@ class EmailFieldTestCase(BaseTestCase):
 
     def test_defaults(self):
         result = make_field(forms.EmailField())
-        self.assertDictEqual(
-            field_expect('EmailInput', 'email', widget_attrs={'maxlength': '320'}),
-            result,
-        )
+        if django.VERSION >= (4, 0):
+            self.assertDictEqual(
+                field_expect('EmailInput', 'email', widget_attrs={'maxlength': '320'}),
+                result,
+            )
+        else:
+            self.assertDictEqual(
+                field_expect('EmailInput', 'email'),
+                result,
+            )
 
     def test_all_args(self):
         result = make_field(forms.EmailField(
@@ -360,5 +365,275 @@ class UUIDFieldTestCase(BaseTestCase):
             required=False, label='UUID', label_suffix=':',
             initial='123e4567-e89b-12d3-a456-426614174000',
             help_text='uuid help', disabled=True, show_hidden_initial=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class FileFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.FileField())
+        self.assertDictEqual(field_expect('ClearableFileInput', 'file'), result)
+
+    def test_all_args(self):
+        result = make_field(forms.FileField(
+            required=False, label='File', label_suffix=':',
+            help_text='file help', disabled=True,
+        ))
+        expect = field_expect(
+            'ClearableFileInput', 'file',
+            required=False, label='File', label_suffix=':',
+            help_text='file help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class ImageFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.ImageField())
+        self.assertDictEqual(field_expect('ClearableFileInput', 'file', widget_attrs={'accept': 'image/*'}), result)
+
+    def test_all_args(self):
+        result = make_field(forms.ImageField(
+            required=False, label='Image', label_suffix=':',
+            help_text='image help', disabled=True,
+        ))
+        expect = field_expect(
+            'ClearableFileInput', 'file',
+            required=False, label='Image', label_suffix=':',
+            help_text='image help', disabled=True,
+            widget_attrs={'accept': 'image/*'}
+        )
+        self.assertDictEqual(expect, result)
+
+
+class MultipleChoiceFieldTestCase(BaseTestCase):
+
+    CHOICES = ((1, 'One'), (2, 'Two'))
+    SERIALIZED_CHOICES = [{'name': 'One', 'value': '1'}, {'name': 'Two', 'value': '2'}]
+
+    def test_defaults(self):
+        result = make_field(forms.MultipleChoiceField(choices=self.CHOICES))
+        self.assertDictEqual(
+            field_expect('SelectMultiple', 'select', widget_choices=self.SERIALIZED_CHOICES),
+            result,
+        )
+
+    def test_all_args(self):
+        result = make_field(forms.MultipleChoiceField(
+            choices=self.CHOICES, required=False, label='Pick many',
+            label_suffix=':', help_text='multi help', disabled=True,
+        ))
+        expect = field_expect(
+            'SelectMultiple', 'select',
+            widget_choices=self.SERIALIZED_CHOICES,
+            required=False, label='Pick many', label_suffix=':',
+            help_text='multi help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class ComboFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.ComboField(fields=[forms.CharField(), forms.EmailField()]))
+        self.assertDictEqual(field_expect('TextInput', 'text'), result)
+
+
+class _SimpleMultiField(forms.MultiValueField):
+    def compress(self, data_list):
+        return ' '.join(data_list) if data_list else ''
+
+
+class MultiValueFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        fields = (forms.CharField(), forms.CharField())
+        widget = forms.MultiWidget(widgets=[f.widget for f in fields])
+        result = make_field(_SimpleMultiField(fields=fields, widget=widget))
+        self.assertDictEqual(field_expect('MultiWidget', None), result)
+
+
+class DecimalFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.DecimalField())
+        self.assertDictEqual(
+            field_expect('NumberInput', 'number', widget_attrs={'step': 'any'}),
+            result,
+        )
+
+    def test_with_decimal_places(self):
+        result = make_field(forms.DecimalField(max_digits=10, decimal_places=2))
+        self.assertDictEqual(
+            field_expect('NumberInput', 'number', widget_attrs={'step': '0.01'}),
+            result,
+        )
+
+    def test_all_args(self):
+        result = make_field(forms.DecimalField(
+            max_digits=10, decimal_places=2, max_value=100, min_value=1,
+            required=False, label='Decimal', label_suffix=':',
+            initial='10.50', help_text='decimal help', disabled=True,
+        ))
+        expect = field_expect(
+            'NumberInput', 'number',
+            widget_attrs={'step': '0.01', 'max': 100, 'min': 1},
+            required=False, label='Decimal', label_suffix=':',
+            initial='10.50', help_text='decimal help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class SplitDateTimeFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.SplitDateTimeField())
+        self.assertDictEqual(field_expect('SplitDateTimeWidget', None), result)
+
+    def test_all_args(self):
+        result = make_field(forms.SplitDateTimeField(
+            required=False, label='Date+Time', label_suffix=':',
+            help_text='split help', disabled=True,
+        ))
+        expect = field_expect(
+            'SplitDateTimeWidget', None,
+            required=False, label='Date+Time', label_suffix=':',
+            help_text='split help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+
+class GenericIPAddressFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.GenericIPAddressField())
+        if django.VERSION >= (4, 0):
+            self.assertDictEqual(field_expect('TextInput', 'text', widget_attrs={'maxlength': '39'}), result)
+        else:
+            self.assertDictEqual(field_expect('TextInput', 'text'), result)
+
+    def test_all_args(self):
+        result = make_field(forms.GenericIPAddressField(
+            required=False, label='IP', label_suffix=':',
+            help_text='ip help', disabled=True,
+        ))
+        
+        if django.VERSION >= (4, 0):
+            expect = field_expect(
+                'TextInput', 'text',
+                required=False, label='IP', label_suffix=':',
+                help_text='ip help', disabled=True,
+                widget_attrs={'maxlength': '39'}
+            )
+        else:
+            expect = field_expect(
+                'TextInput', 'text',
+                required=False, label='IP', label_suffix=':',
+                help_text='ip help', disabled=True,
+            )
+        self.assertDictEqual(expect, result)
+
+
+class FilePathFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = make_field(forms.FilePathField(path=tmp))
+            self.assertDictEqual(field_expect('Select', 'select'), result)
+
+
+class JSONFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.JSONField())
+        self.assertDictEqual(
+            field_expect('Textarea', None, widget_attrs={'cols': '40', 'rows': '10'}),
+            result,
+        )
+
+    def test_all_args(self):
+        result = make_field(forms.JSONField(
+            required=False, label='JSON', label_suffix=':',
+            help_text='json help', disabled=True,
+        ))
+        expect = field_expect(
+            'Textarea', None,
+            widget_attrs={'cols': '40', 'rows': '10'},
+            required=False, label='JSON', label_suffix=':',
+            help_text='json help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class SlugFieldTestCase(BaseTestCase):
+
+    def test_defaults(self):
+        result = make_field(forms.SlugField())
+        self.assertDictEqual(field_expect('TextInput', 'text'), result)
+
+    def test_all_args(self):
+        result = make_field(forms.SlugField(
+            required=False, label='Slug', label_suffix=':',
+            help_text='slug help', disabled=True,
+        ))
+        expect = field_expect(
+            'TextInput', 'text',
+            required=False, label='Slug', label_suffix=':',
+            help_text='slug help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class TypedChoiceFieldTestCase(BaseTestCase):
+
+    CHOICES = ((1, 'One'), (2, 'Two'))
+    SERIALIZED_CHOICES = [{'name': 'One', 'value': '1'}, {'name': 'Two', 'value': '2'}]
+
+    def test_defaults(self):
+        result = make_field(forms.TypedChoiceField(choices=self.CHOICES))
+        self.assertDictEqual(
+            field_expect('Select', 'select', widget_choices=self.SERIALIZED_CHOICES),
+            result,
+        )
+
+    def test_all_args(self):
+        result = make_field(forms.TypedChoiceField(
+            choices=self.CHOICES, coerce=int, required=False,
+            label='Typed', label_suffix=':', help_text='typed help', disabled=True,
+        ))
+        expect = field_expect(
+            'Select', 'select',
+            widget_choices=self.SERIALIZED_CHOICES,
+            required=False, label='Typed', label_suffix=':',
+            help_text='typed help', disabled=True,
+        )
+        self.assertDictEqual(expect, result)
+
+
+class TypedMultipleChoiceFieldTestCase(BaseTestCase):
+
+    CHOICES = ((1, 'One'), (2, 'Two'))
+    SERIALIZED_CHOICES = [{'name': 'One', 'value': '1'}, {'name': 'Two', 'value': '2'}]
+
+    def test_defaults(self):
+        result = make_field(forms.TypedMultipleChoiceField(choices=self.CHOICES))
+        self.assertDictEqual(
+            field_expect('SelectMultiple', 'select', widget_choices=self.SERIALIZED_CHOICES),
+            result,
+        )
+
+    def test_all_args(self):
+        result = make_field(forms.TypedMultipleChoiceField(
+            choices=self.CHOICES, coerce=int, required=False,
+            label='Typed Multi', label_suffix=':', help_text='typed multi help', disabled=True,
+        ))
+        expect = field_expect(
+            'SelectMultiple', 'select',
+            widget_choices=self.SERIALIZED_CHOICES,
+            required=False, label='Typed Multi', label_suffix=':',
+            help_text='typed multi help', disabled=True,
         )
         self.assertDictEqual(expect, result)

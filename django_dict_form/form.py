@@ -1,11 +1,13 @@
 from django import forms
+from django.forms import Widget
+from typing import Iterable
 
 
-def extract_choices(choices) -> list[dict]:
+def extract_choices(choices: Iterable[tuple]) -> list[dict]:
     return [{"value": str(key), "name": value} for key, value in choices]
 
 
-def _widget_as_dict(widget) -> dict:
+def _widget_as_dict(widget: Widget) -> dict:
     return {
         "name": widget.__class__.__name__,
         "is_hidden": widget.is_hidden,
