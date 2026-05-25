@@ -1,5 +1,12 @@
 # django-dict-form
 
+[![PyPI](https://img.shields.io/pypi/v/django-dict-form.svg?label=PyPI)](https://pypi.org/project/django-deploy-probes/)
+[![Django Packages](https://img.shields.io/badge/Django%20Packages-django--dict--form-0c4b33.svg)](https://djangopackages.org/packages/p/django_dict_form/)
+[![Python](https://img.shields.io/badge/python-%3E%3D3.11-3776AB.svg)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/django-%3E%3D3.2-0C4B33.svg)](https://www.djangoproject.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<!-- [![uv](https://img.shields.io/badge/package%20manager-uv-5C3EE8.svg)](https://docs.astral.sh/uv/) -->
+
 Lightweight Django Forms extension. Adds `as_dict()` — serializes form definitions to Python dicts / JSON, making forms easier to integrate with REST APIs, SPA frontends (React/Vue), dynamic UI generators, and low-code systems.
 
 Extends standard Django form rendering (`as_p`, `as_table`, `as_ul`) with machine-readable field metadata, validation rules, and widget configuration.
@@ -25,7 +32,7 @@ pip install django-dict-form
 ## Quick Start
 
 ```python
-from django_dict_form.form import DictForm
+from django_dict_form import DictForm
 from django import forms
 
 class ContactForm(DictForm):
