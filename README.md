@@ -121,8 +121,8 @@ Custom widgets supported — pass any widget instance, choices and attrs extract
 
 ## Requirements
 
-- Python >= 3.12
-- Django >= 6.0.5
+- Python >= 3.11.15
+- Django >= 3.2
 
 ## License
 
